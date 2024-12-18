@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: recipe_diet_bot
+      POSTGRES_USER: anyta
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    depends_on:
+      - postgres
+    command: >
+      sh -c "sleep 5 && python site_parser.py && python bot.py"
+    environment:
+      DB_HOST: postgres
+      DB_NAME: recipe_diet_bot
+      DB_USER: anyta
+      DB_PASSWORD: ${DB_PASSWORD}
+      BOT_TOKEN: ${BOT_TOKEN}
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres-data:
